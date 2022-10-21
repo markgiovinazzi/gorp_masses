@@ -222,6 +222,3 @@ def rp_posterior(abs_rp_mags, N = 100000):
     print('Writing to file...')
     ascii.write(t, 'gorp_rp_results.dat', overwrite = True)
     print('Done!')
-
-gaia_posterior('1872046609345556480')
-#gaia_posterior(['3195919254111314816', '3195919528989223040', '1842656663520849024', '425040000962559616', '2183298113277545088'])
