@@ -1,5 +1,5 @@
 # import libraries
-import ssl, numpy as np
+import os, ssl, pkg_resources, corner, numpy as np
 from astropy.io import ascii, fits
 from astropy.table import Table
 from scipy import interpolate
@@ -21,7 +21,7 @@ def absmag(appmag, plx):
     return appmag + 5 - 5 * np.log10(1000. / plx)
 
 # function useed to estimate masses from Gaia
-def gaia_posterior(ids, N = 100000):
+def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path = 'gorp_plots'):
 
     '''
     Estimate a posterior on mass given GAIA Source ID(s)
@@ -61,7 +61,7 @@ def gaia_posterior(ids, N = 100000):
             if False, be mindful that extinction may make star appear fainter, causing potential underestimate in mass
     '''
 
-    # reformat and determine th enumber of ids provided based on the input type
+    # reformat and determine the number of ids provided based on the input type
     if isinstance(ids, list): N_ids = len(ids); ids = str(ids)[1:-1]
     elif isinstance(ids, str): N_ids = 1
     else: print('Input "ids" must be either \'str\' or list/tuple of \'str\''); exit(1)
@@ -132,7 +132,7 @@ def gaia_posterior(ids, N = 100000):
     ext_flag = np.abs(bs) > 10
 
     # load in uncertainties from file
-    with fits.open('resources/massmag_errs_new.fits') as hdul:
+    with fits.open(os.path.join(pkg_resources.resource_filename('gorp_mass', 'resources'), 'massmag_errs_new.fits')) as hdul:
 
         points = hdul[1].data['X'][0]
         massmag_errs = hdul[1].data['ERF_DATA'][0]
@@ -160,6 +160,44 @@ def gaia_posterior(ids, N = 100000):
     print('Writing to file...')
     ascii.write(t, 'gorp_id_results.dat', overwrite = True)
     print('Done!')
+    
+    # if True, 1d histograms will be saved for each input Gaia source id
+    if plot_1d:
+    
+        # check to see if `plot_path` exists. This is helpful for default `gorp_plots` directory
+        if not os.path.exists(plot_path): os.makedir(plot_path)
+    
+        for i in range(len(source_ids)):
+        
+            plt.figure(figsize = (6.40, 3.95))
+            bins, edges = plt.hist(np.random.normal(masses[i], mass_errs[i], N), histtype = 'step', color = 'darkblue', lw = 2, bins = N / 10., density = True)
+            plt.fill_between(np.linspace(edges[masses[i] - mass_errs[i]], masses[i] + mass_errs[i], N), y1 = 0, y2 = bins)
+            plt.xlabel(r'$M_\mathrm{GORP}~\left[\mathrm{M_\odot}\right]$')
+            plt.ylabel('Probability Density')
+            plt.savefig(os.path.join(plot_path, str(i) + '_1d.pdf', bbox_inches = 'tight')
+            plt.close('all')
+            
+    # if True, 2d histograms will be saved for each input Gaia source id
+    if plot_2d:
+    
+        # check to see if `plot_path` exists. This is helpful for default `gorp_plots` directory
+        if not os.path.exists(plot_path): os.makedir(plot_path)
+    
+        for i in range(len(source_ids)):
+        
+            plt.figure(figsize = (6.40, 3.95))
+            
+            data1 = np.random.normal(masses[i], mass_errs[i], N).reshape([N, 2])
+            data2 = np.random.normal(masses[i], mass_errs[i], N).reshape([N, 2])
+            
+            samples = np.vstack([data1, data2])
+            figure = corner.corner(samples)
+            
+            #plt.hist(np.random.normal(masses[i]), mass_errs[i], N, histtype = 'step', color = 'darkblue', lw = 2, bins = N / 10., density = True)
+            #plt.xlabel(r'$M_\mathrm{GORP}~\left[\mathrm{M_\odot}\right]$')
+            #plt.ylabel('Probability Density')
+            plt.savefig(os.path.join(plot_path, str(i) + '_2d.pdf', bbox_inches = 'tight')
+            plt.close('all')
     
 # function useed to estimate masses from RP magnitudes
 def rp_posterior(abs_rp_mags, N = 100000):
