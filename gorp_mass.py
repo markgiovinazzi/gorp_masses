@@ -1,5 +1,5 @@
 # import libraries
-import os, ssl, pkg_resources, corner, numpy as np
+import os, ssl, pkg_resources, corner, numpy as np, matplotlib.pyplot as plt
 from astropy.io import ascii, fits
 from astropy.table import Table
 from scipy import interpolate
@@ -171,7 +171,8 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
         
             plt.figure(figsize = (6.40, 3.95))
             bins, edges = plt.hist(np.random.normal(masses[i], mass_errs[i], N), histtype = 'step', color = 'darkblue', lw = 2, bins = N / 10., density = True)
-            plt.fill_between(np.linspace(edges[masses[i] - mass_errs[i]], masses[i] + mass_errs[i], N), y1 = 0, y2 = bins)
+            print(bins)
+            plt.fill_between(np.linspace(edges[masses[i] - mass_errs[i]], masses[i] + mass_errs[i], N), y1 = 0, y2 = np.array(bins))
             plt.xlabel(r'$M_\mathrm{GORP}~\left[\mathrm{M_\odot}\right]$')
             plt.ylabel('Probability Density')
             plt.savefig(os.path.join(plot_path, str(i) + '_1d.pdf', bbox_inches = 'tight'))
@@ -260,3 +261,6 @@ def rp_posterior(abs_rp_mags, N = 100000):
     print('Writing to file...')
     ascii.write(t, 'gorp_rp_results.dat', overwrite = True)
     print('Done!')
+
+
+gaia_posterior('1872046609345556480', plot_1d = True)
