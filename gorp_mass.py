@@ -64,7 +64,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
     # reformat and determine the number of ids provided based on the input type
     if isinstance(ids, list): N_ids = len(ids); ids = str(ids)[1:-1]
     elif isinstance(ids, str): N_ids = 1
-    else: print('Input "ids" must be either \'str\' or list/tuple of \'str\''); exit(1)
+    else: print('Input "ids" must be either \'str\' or list/tuple of \'str\''); os._exit()
 
     # set up our query to the Gaia DR3 catalog
     query = """
@@ -89,7 +89,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
 
     # the program cannot estimate masses for stars that are outside the recommended range
     if np.sum(ineligible_mask) == N_ids:
-        print('Sorry, all ids provided are outside the eligible range (4.0 < MGRP < 14.5).'); exit(1)
+        print('Sorry, all ids provided are outside the eligible range (4.0 < MGRP < 14.5).'); os._exit()
     elif np.sum(ineligible_mask) > 0:
         print('The following ' + str(int(np.sum(ineligible_mask))) + ' ids are outside the eligible range (4.0 < MGRP < 14.5).')
         for i, abs_rp in zip(source_ids[ineligible_mask], abs_rp_mags[ineligible_mask]):
@@ -165,7 +165,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
     if plot_1d:
     
         # check to see if `plot_path` exists. This is helpful for default `gorp_plots` directory
-        if not os.path.exists(plot_path): os.makedir(plot_path)
+        if not os.path.exists(plot_path): os.mkdir(plot_path)
     
         for i in range(len(source_ids)):
         
@@ -174,14 +174,14 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
             plt.fill_between(np.linspace(edges[masses[i] - mass_errs[i]], masses[i] + mass_errs[i], N), y1 = 0, y2 = bins)
             plt.xlabel(r'$M_\mathrm{GORP}~\left[\mathrm{M_\odot}\right]$')
             plt.ylabel('Probability Density')
-            plt.savefig(os.path.join(plot_path, str(i) + '_1d.pdf', bbox_inches = 'tight')
+            plt.savefig(os.path.join(plot_path, str(i) + '_1d.pdf', bbox_inches = 'tight'))
             plt.close('all')
             
     # if True, 2d histograms will be saved for each input Gaia source id
     if plot_2d:
     
         # check to see if `plot_path` exists. This is helpful for default `gorp_plots` directory
-        if not os.path.exists(plot_path): os.makedir(plot_path)
+        if not os.path.exists(plot_path): os.mkdir(plot_path)
     
         for i in range(len(source_ids)):
         
@@ -196,7 +196,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
             #plt.hist(np.random.normal(masses[i]), mass_errs[i], N, histtype = 'step', color = 'darkblue', lw = 2, bins = N / 10., density = True)
             #plt.xlabel(r'$M_\mathrm{GORP}~\left[\mathrm{M_\odot}\right]$')
             #plt.ylabel('Probability Density')
-            plt.savefig(os.path.join(plot_path, str(i) + '_2d.pdf', bbox_inches = 'tight')
+            plt.savefig(os.path.join(plot_path, str(i) + '_2d.pdf', bbox_inches = 'tight'))
             plt.close('all')
     
 # function useed to estimate masses from RP magnitudes
@@ -227,7 +227,7 @@ def rp_posterior(abs_rp_mags, N = 100000):
 
     # the program cannot estimate masses for stars that are outside the recommended range
     if np.sum(ineligible_mask) == len(abs_rp_mags):
-        print('Sorry, all RP mags provided are outside the eligible range (4.0 < MGRP < 14.5). Make sure you are using absolute mags!'); exit(1)
+        print('Sorry, all RP mags provided are outside the eligible range (4.0 < MGRP < 14.5). Make sure you are using absolute mags!'); os._exit()
     elif np.sum(ineligible_mask) > 0:
         print('Some RP mags are outside the eligible range (4.0 < MGRP < 14.5). Ignoring those.')
         # adjust queried results by remeoving ineligble stars
