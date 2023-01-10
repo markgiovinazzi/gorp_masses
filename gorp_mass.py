@@ -119,7 +119,8 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
     plxs        = np.array(r['parallax'])
     abs_rp_mags = absmag(rp_mags, plxs)
     ineligible_mask = (abs_rp_mags < 4) | (abs_rp_mags > 14.5)
-
+    print(r)
+    print(len(r))
     # the program cannot estimate masses for stars that are outside the recommended range
     if np.sum(ineligible_mask) == N_ids:
         print('Sorry, all ids provided are outside the eligible range (4.0 < MGRP < 14.5).'); os._exit(1)
