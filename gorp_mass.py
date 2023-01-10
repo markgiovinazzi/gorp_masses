@@ -132,7 +132,8 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
         r = r[~ineligible_mask]
     else:
         print('All ids provided are within the eligible photometric range (4.0 < MGRP < 14.5).')
-
+    print(r)
+    print(len(r))
     # re-itemize downloaded parameters for gaia source id(s)
     source_ids        = np.array(r['source_id'])
     rp_mags           = np.array(r['phot_rp_mean_mag'])
