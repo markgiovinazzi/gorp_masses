@@ -119,8 +119,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
     plxs        = np.array(r['parallax'])
     abs_rp_mags = absmag(rp_mags, plxs)
     ineligible_mask = (abs_rp_mags < 4) | (abs_rp_mags > 14.5)
-    print(r)
-    print(len(r))
+
     # the program cannot estimate masses for stars that are outside the recommended range
     if np.sum(ineligible_mask) == N_ids:
         print('Sorry, all ids provided are outside the eligible range (4.0 < MGRP < 14.5).'); os._exit(1)
@@ -128,15 +127,12 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
         print('The following ' + str(int(np.sum(ineligible_mask))) + ' ids are outside the eligible range (4.0 < MGRP < 14.5).')
         for i, abs_rp in zip(source_ids[ineligible_mask], abs_rp_mags[ineligible_mask]):
             print(str(i) + ' (abs_rp_mag = ' + str(round(abs_rp, 2)) + ')')
-        N_ids -= np.sum(ineligible_mask)
         # adjust queried results by removing ineligble stars
         r = r[~ineligible_mask]
+        N_ids = len(r)
     else:
         print('All ids provided are within the eligible photometric range (4.0 < MGRP < 14.5).')
-    print(N_ids)
-    print(len(N_ids))
-    print(r)
-    print(len(r))
+
     # re-itemize downloaded parameters for gaia source id(s)
     source_ids        = np.array(r['source_id'])
     rp_mags           = np.array(r['phot_rp_mean_mag'])
