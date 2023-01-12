@@ -16,7 +16,7 @@ python3 setup.py install
 
 There are two functions available for use within this repository, `rp_posterior()` and `gaia_posterior()`. The mass-magnitude relation is built on top of Gaia photometry, specifically using the instrument's RP bandpass. If you have a single absolute RP magnitude, or an array of them, you can feed that into `rp_posterior()`, which takes a singular argument in the form of absolute RP magnitude(s) and returns an ASCII data table with the following columns: absolute RP magnitude, GORP mass estimate, GORP mass error.
 
-The `gaia_posterior()` function, however, is designed to accept Gaia source ID(s), download the photometry, and return a GORP mass estimate. As an example, we can query the exoplanet archive for systems where host stars have published masses and registered Gaia source IDs. Suppose those IDs are stored in a variable called `gaia_ids`. We can execute the following code.
+The `gaia_posterior()` function, however, is designed to accept Gaia DR3 source ID(s), download the photometry, and return a GORP mass estimate. As an example, we can query the exoplanet archive for systems where host stars have published masses and registered Gaia source IDs. Suppose those IDs are stored in a variable called `gaia_ids`. We can execute the following code.
 
 ```python
 from gorp_mass import gaia_posterior
@@ -60,4 +60,33 @@ gaia_posterior('2635476908753563008', plot_1d = True)
 
 ![2635476908753563008_1d](https://user-images.githubusercontent.com/14206224/211975098-2bb889a7-9732-45f4-b77e-70eadadfe611.jpeg)
 
+Ducrot et al. 2020 derived a mass estimate for TRAPPIST-1 of `m = 0.0898 +/- 0.0023` solar masses. We can include it in our plot by passing information through the arguments `lit_vals`, `lit_errs`, and `lit_labs` like so.
 
+```
+from gorp_mass import gaia_posterior
+gaia_posterior('2635476908753563008', plot_1d = True, lit_vals = 0.0898, lit_errs = 0.0023, lit_labs = 'Ducrot et al. 2020')
+```
+
+![2635476908753563008_1d](https://user-images.githubusercontent.com/14206224/211978009-e78a445e-186e-43cd-bc7a-87aa4b6abc71.jpeg)
+
+The arguments `lit_vals`, `lit_errs`, and `lit_labs` can accept either singular values or arrays of multiple values to include additional literature values on the plot for direct comparison. If `lit_vals` is given, `lit_errs` and `lit_labs` can be used optionally.
+
+And, while Gaia photometry is fantastic, some stars can still be poorly measured. So, how trustworthy is a star's photometric mass estimate if its flux, parallax, etc has large errors? To understand this, we can visualize the GORP mass estimate in a 2d sense. Let's first explore this with TRAPPIST-1 again, this time by turning on `plot_2d`.
+
+```
+from gorp_mass import gaia_posterior
+gaia_posterior('2635476908753563008', plot_2d = True)
+```
+
+![2635476908753563008_2d](https://user-images.githubusercontent.com/14206224/211978840-0e95dd09-bfdb-453e-906f-2d82c89e09c1.jpeg)
+
+Beautiful! TRAPPIST-1 is pristinely measured in Gaia's RP bandpass. But, not all stars are. For example, Gaia DR3 1061855729642662144's absolute RP magnitude has a width that spans nearly a full magnitude, so we should be skeptical of the GORP mass derived from its absolute RP magnitude point estimate.
+
+```
+from gorp_mass import gaia_posterior
+gaia_posterior('1061855729642662144', plot_2d = True)
+```
+
+![1061855729642662144_2d](https://user-images.githubusercontent.com/14206224/211983210-101de1d6-0538-4bd4-bf8e-af0437086df3.jpeg)
+
+If any bugs are found, or if there are suggestions on how this code can be improved, please feel free to contact me at markgio@sas.upenn.edu.
