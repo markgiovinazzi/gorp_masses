@@ -113,15 +113,36 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
     job = Gaia.launch_job(query)
     r = job.get_results()
     
-    # first, check which stars are not eligible for our relation
+    # first, check that stars have valid parallax and rp mag measurements
+    valid_mask = ~(r['parallax'] > 0) | np.isnan(r['phot_rp_mean_mag'])
+
+    # the program cannot estimate masses for stars without vaild parallax or rp mag measurements; remove them
+    if np.sum(valid_mask) == N_ids:
+        print('Sorry, none of the ids provided have valid parallax or RP mag measurements.'); os._exit(1)
+    elif np.sum(valid_mask) > 0:
+        print('The following ' + str(int(np.sum(valid_mask))) + ' ids have invalid parallax or RP mag measurements.')
+        for i, plx, app_rp in zip(r['source_id'][valid_mask], r['parallax'][valid_mask], r['phot_rp_mean_mag'][valid_mask]):
+            try:
+                print(str(i) + ' (plx = ' + str(plx) + ', rp_mag = ' + str(round(app_rp, 2)) + ')')
+            except:
+                try:
+                    print(str(i) + ' (plx = ' + str(round(plx, 2)) + ', rp_mag = ' + str(app_rp) + ')')
+                except:
+                    print(str(i) + ' (plx = ' + str(plx) + ', rp_mag = ' + str(app_rp) + ')')
+        # adjust queried results by removing invalid stars
+        r = r[~valid_mask]
+        N_ids = len(r)
+    else:
+        print('All ids provided have valid parallax and RP mag measurements.')
+
+    # next, check which stars are not eligible for our relation
     source_ids  = np.array(r['source_id'])
     rp_mags     = np.array(r['phot_rp_mean_mag'])
     plxs        = np.array(r['parallax'])
     abs_rp_mags = absmag(rp_mags, plxs)
     ineligible_mask = (abs_rp_mags < 4) | (abs_rp_mags > 14.5)
-    for p in plxs:
-        print(p)
-    # the program cannot estimate masses for stars that are outside the recommended range
+
+    # the program cannot estimate masses for stars that are outside the recommended range; remove them
     if np.sum(ineligible_mask) == N_ids:
         print('Sorry, all ids provided are outside the eligible range (4.0 < MGRP < 14.5).'); os._exit(1)
     elif np.sum(ineligible_mask) > 0:
@@ -226,9 +247,9 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
             
             # ~automatic legend handling; legend placement is known to not be optimal, but for most cases this seeems to do a good job
             if lit_vals is not None:
-                if isinstance(lit_vals, float): lit_vals = np.array(lit_vals)
+                if isinstance(lit_vals, float): lit_vals = np.array([lit_vals])
                 if lit_labs is not None:
-                    if isinstance(lit_labs, str): lit_labs = np.array(lit_labs)
+                    if isinstance(lit_labs, str): lit_labs = np.array([lit_labs])
                     for j in range(len(lit_vals)):
                         plt.axvline(x = lit_vals[j], label = lit_labs[j], ls = '--', lw = 2, zorder = 1000, color = colors[j])
                     m = max(len(max(max(lit_labs, key = len))), 23)
@@ -243,11 +264,11 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
                     for j in range(len(lit_vals)):
                         plt.axvline(x = lit_vals[j], ls = '--', lw = 2, zorder = 1000, color = colors[j])
                 if lit_errs is not None:
-                    if isinstance(lit_errs, float): lit_errs = np.array(lit_errs)
+                    if isinstance(lit_errs, float): lit_errs = np.array([lit_errs])
                     for j in range(len(lit_vals)):
                         plt.fill_between(x = np.array([lit_vals[j] - lit_errs[j], lit_vals[j] + lit_errs[j]]), y1 = 0, y2 = plt.axis()[-1], alpha = 0.3, zorder = 100 + j, color = colors[j])
                         
-            plt.savefig(os.path.join(plot_path, str(source_ids[i]) + '_1d.' + plot_ext), bbox_inches = 'tight')
+            plt.savefig(os.path.join(plot_path, str(source_ids[i]) + '_1d.' + plot_ext), bbox_inches = 'tight', dpi = 1000)
             plt.close('all')
             
     # if True, 2d histograms (mass vs magnitude) will be saved for each input Gaia source id
@@ -266,10 +287,15 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
         for i in range(len(source_ids)):
         
             print('Plotting 2d histogram of ' + str(source_ids[i]) + '. This may take a minute.')
-            
+
             # construct empty mass-magnitude grid given input information from Gaia and standard errors from our relation
             app_rps = -2.5 * np.log10(np.random.normal(rp_fluxes[i], rp_flux_errs[i], N)) + rp_zp
+            if np.sum(np.isnan(app_rps)) > N / 10.: print('2d plot of ' + str(source_ids[i]) + ' failed. RP_flux / error is too small.'); continue
+            else: app_rps = app_rps[~np.isnan(app_rps)]
             abs_rps = absmag(app_rps, np.random.normal(plxs[i], plx_errs[i], N))
+            if np.sum(np.isnan(abs_rps))  > N / 10.: print('2d plot of ' + str(source_ids[i]) + ' failed. plx / error is too small.'); continue
+            else: abs_rps = abs_rps[~np.isnan(abs_rps)]
+            abs_rps = abs_rps[(abs_rps > 4) & (abs_rps < 14.5)]
             x_bins, x_edges = np.histogram(abs_rps, bins = nbins)
             bin_centers = (x_edges[1:] + x_edges[:-1]) / 2.
             grid = np.zeros(len(bin_centers)**2).reshape(len(bin_centers), len(bin_centers))
@@ -287,8 +313,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
                 grid[:, grid_ind] += y_bins
                 
             # plot a 2d probability density of masses and magnitudes for the given Gaia source
-            plt.figure(figsize = (6.40, 3.95))
-            fig, axs = plt.subplots(2, 2)
+            fig, axs = plt.subplots(2, 2, figsize = (6.40, 3.95), gridspec_kw = {'width_ratios': [1, 0.67], 'height_ratios': [0.67, 1]})
             fig.delaxes(axs[0, 1])
             fig.subplots_adjust(hspace = 0, wspace = 0)
             axs[1, 0].imshow(grid, cmap = 'Blues', extent = (np.min(abs_rps), np.max(abs_rps), np.max(mass_bins), np.min(mass_bins)), aspect = 'auto')
@@ -304,7 +329,8 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
                 for s in [0, 1]:
                     axs[s, s].spines[side].set_visible(False)
                     axs[s, s].tick_params(left = False, right = False, labelleft = False, labelbottom = False, bottom = False)
-            plt.savefig(os.path.join(plot_path, str(source_ids[i]) + '_2d.' + plot_ext), bbox_inches = 'tight')
+                    
+            plt.savefig(os.path.join(plot_path, str(source_ids[i]) + '_2d.' + plot_ext), bbox_inches = 'tight', dpi = 1000)
             plt.close('all')
             
     # return a table of output values describing the mass posterior(s)
