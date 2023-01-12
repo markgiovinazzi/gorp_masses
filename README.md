@@ -69,7 +69,7 @@ gaia_posterior('2635476908753563008', plot_1d = True, lit_vals = 0.0898, lit_err
 
 ![2635476908753563008_1d](https://user-images.githubusercontent.com/14206224/211978009-e78a445e-186e-43cd-bc7a-87aa4b6abc71.jpeg)
 
-The arguments `lit_vals`, `lit_errs`, and `lit_labs` can accept either singular values or arrays of multiple values to include additional literature values on the plot for direct comparison. If `lit_vals` is given, `lit_errs` and `lit_labs` can be used optionally.
+The arguments `lit_vals`, `lit_errs`, and `lit_labs` can accept either singular values or arrays of multiple values to include additional literature values on the plot for direct comparison. If `lit_vals` is given, `lit_errs` and `lit_labs` can be used optionally. If `lit_labs` is given, a legend will be added to the plot (automatically including this paper's reference as well). The program will attempt to find an optimal placement for the legend given the range of `lit_vals`, but legend placement is currently known to not always be perfect. Future updates to this code should correct for this.
 
 And, while Gaia photometry is fantastic, some stars can still be poorly measured. So, how trustworthy is a star's photometric mass estimate if its flux, parallax, etc has large errors? To understand this, we can visualize the GORP mass estimate in a 2d sense. Let's first explore this with TRAPPIST-1 again, this time by turning on `plot_2d`.
 
