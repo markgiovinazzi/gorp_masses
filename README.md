@@ -8,7 +8,7 @@ If you use this code, please cite the relevant paper:
 To get started, you should clone a copy of the code to your home machine.
 
 ```python
-git clone github.com/markgiovinazzi/gorp_masses
+git clone https://github.com/markgiovinazzi/gorp_masses
 cd gorp_masses
 python3 setup.py build
 python3 setup.py install
