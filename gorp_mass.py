@@ -375,7 +375,7 @@ def rp_posterior(abs_rp_mags, N = 100000):
         print('All RP mags provided are within the eligible photometric range (4.0 < MGRP < 14.5).')
 
     # load in uncertainties from file
-    with fits.open('resources/massmag_errs_new.fits') as hdul:
+    with fits.open(os.path.join(pkg_resources.resource_filename('gorp_mass', 'resources'), 'massmag_errs_new.fits')) as hdul:
 
         points = hdul[1].data['X'][0]
         massmag_errs = hdul[1].data['ERF_DATA'][0]
