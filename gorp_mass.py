@@ -362,6 +362,7 @@ def rp_posterior(abs_rp_mags, N = 100000):
     '''
 
     if isinstance(abs_rp_mags, float): abs_rp_mags = np.array(abs_rp_mags)
+    N_rps = len(abs_rp_mags)
     ineligible_mask = (abs_rp_mags < 4) | (abs_rp_mags > 14.5)
 
     # the program cannot estimate masses for stars that are outside the recommended range
@@ -387,7 +388,7 @@ def rp_posterior(abs_rp_mags, N = 100000):
     A, B, C = 0.444687, -0.0968913, 0.0746491
     log10masses = A + B * abs_rp_mags - C * (1. + erf(abs_rp_mags - 9.5))
     masses = 10**log10masses
-    try: mass_errs = np.array([np.std(10**np.random.normal(log10masses[i], f(abs_rp_mags[i]), N)) for i in range(N_ids)])
+    try: mass_errs = np.array([np.std(10**np.random.normal(log10masses[i], f(abs_rp_mags[i]), N)) for i in range(N_rps)])
     except: mass_errs = np.std(10**np.random.normal(log10masses, f(abs_rp_mags), N))
     
     # columnize the results and write to an ascii table
