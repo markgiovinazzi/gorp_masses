@@ -116,7 +116,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
     # first, check that stars have valid parallax and rp mag measurements
     valid_mask = ~(r['parallax'] > 0) | np.isnan(r['phot_rp_mean_mag'])
 
-    # the program cannot estimate masses for stars without vaild parallax or rp mag measurements; remove them
+    # the program cannot estimate masses for stars without valid parallax or rp mag measurements; remove them
     if np.sum(valid_mask) == N_ids:
         print('Sorry, none of the ids provided have valid parallax or RP mag measurements.'); os._exit(1)
     elif np.sum(valid_mask) > 0:
@@ -245,7 +245,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
             plt.ylabel('Probability Density')
             plt.ylim(0, plt.axis()[-1])
             
-            # ~automatic legend handling; legend placement is known to not be optimal, but for most cases this seeems to do a good job
+            # ~automatic legend handling; legend placement is known to not be optimal, but for most cases this seems to do a good job
             if lit_vals is not None:
                 if isinstance(lit_vals, float): lit_vals = np.array([lit_vals])
                 if lit_labs is not None:
@@ -336,7 +336,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
     # return a table of output values describing the mass posterior(s)
     return t
     
-# function useed to estimate masses from RP magnitudes
+# function used to estimate masses from RP magnitudes
 def rp_posterior(abs_rp_mags, N = 100000):
 
     '''
@@ -370,7 +370,7 @@ def rp_posterior(abs_rp_mags, N = 100000):
         print('Sorry, all RP mags provided are outside the eligible range (4.0 < MGRP < 14.5). Make sure you are using absolute mags!'); os._exit(1)
     elif np.sum(ineligible_mask) > 0:
         print('Some RP mags are outside the eligible range (4.0 < MGRP < 14.5). Ignoring those.')
-        # adjust queried results by remeoving ineligble stars
+        # adjust queried results by removing ineligible stars
         abs_rp_mags = abs_rp_mags[~ineligible_mask]
     else:
         print('All RP mags provided are within the eligible photometric range (4.0 < MGRP < 14.5).')
