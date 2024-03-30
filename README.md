@@ -39,7 +39,7 @@ is_MS: bool, array
   this relation is NOT applicable to stars that return `is_MS = False`
 is_ss: bool, array
   flag relaying whether Gaia registers the star as a good fit to a single-star astrometric solution
-  True if the star is likley a single star with a good astrometric solution from Gaia, False otherwise
+  True if the star is likely a single star with a good astrometric solution from Gaia, False otherwise
   if False, user should be skeptical of returned mass estimate
 phot_par: bool, array
   flag for photometric and astrometric parameters that may bias our mass estimates
@@ -51,7 +51,7 @@ ext_flag: bool, array
   if False, be mindful that extinction may make star appear fainter, causing potential underestimate in mass
 ```
 
-Additionally, the program has some bonus plotting features included. For example, what if we wannt to make the 1d GORP mass posterior for TRAPPIST-1 (Gaia DR3 2635476908753563008)? The next two lines of code will save the following plot to a user-specified directory that defaults to `gorp_plots`.
+Additionally, the program has some bonus plotting features included. For example, what if we want to make the 1d GORP mass posterior for TRAPPIST-1 (Gaia DR3 2635476908753563008)? The next two lines of code will save the following plot to a user-specified directory that defaults to `gorp_plots`.
 
 ```
 from gorp_mass import gaia_posterior
