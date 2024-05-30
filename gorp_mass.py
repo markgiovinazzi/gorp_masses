@@ -121,7 +121,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
         print('Sorry, none of the ids provided have valid parallax or RP mag measurements.'); os._exit(1)
     elif np.sum(valid_mask) > 0:
         print('The following ' + str(int(np.sum(valid_mask))) + ' ids have invalid parallax or RP mag measurements.')
-        for i, plx, app_rp in zip(r['source_id'][valid_mask], r['parallax'][valid_mask], r['phot_rp_mean_mag'][valid_mask]):
+        for i, plx, app_rp in zip(r['SOURCE_ID'][valid_mask], r['parallax'][valid_mask], r['phot_rp_mean_mag'][valid_mask]):
             try:
                 print(str(i) + ' (plx = ' + str(plx) + ', rp_mag = ' + str(round(app_rp, 2)) + ')')
             except:
@@ -136,7 +136,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
         print('All ids provided have valid parallax and RP mag measurements.')
 
     # next, check which stars are not eligible for our relation
-    source_ids  = np.array(r['source_id'])
+    source_ids  = np.array(r['SOURCE_ID'])
     rp_mags     = np.array(r['phot_rp_mean_mag'])
     plxs        = np.array(r['parallax'])
     abs_rp_mags = absmag(rp_mags, plxs)
@@ -156,7 +156,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
         print('All ids provided are within the eligible photometric range (4.0 < MGRP < 14.5).')
 
     # re-itemize downloaded parameters for gaia source id(s)
-    source_ids        = np.array(r['source_id'])
+    source_ids        = np.array(r['SOURCE_ID'])
     rp_mags           = np.array(r['phot_rp_mean_mag'])
     plxs              = np.array(r['parallax'])
     plx_errs          = np.array(r['parallax_error'])
@@ -206,7 +206,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
 
     # columnize the results and write to an ascii table
     t = Table()
-    t['source_id'] = source_ids
+    t['SOURCE_ID'] = source_ids
     t['mass'] = masses
     t['mass_err'] = mass_errs
     t['is_MS'] = is_MS
