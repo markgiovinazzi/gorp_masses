@@ -10,8 +10,8 @@ To get started, you should clone a copy of the code to your home machine.
 ```python
 git clone https://github.com/markgiovinazzi/gorp_masses
 cd gorp_masses
-python3 setup.py build
-python3 setup.py install
+python3 setup.py sdist
+pip3 install dist/gorp_mass-1.0.tar.gz
 ```
 
 There are two functions available for use within this repository, `rp_posterior()` and `gaia_posterior()`. The mass-magnitude relation is built on top of Gaia photometry, specifically using the instrument's RP bandpass. If you have a single absolute RP magnitude, or an array of them, you can feed that into `rp_posterior()`, which takes a singular argument in the form of absolute RP magnitude(s) and returns an ASCII data table with the following columns: absolute RP magnitude, GORP mass estimate, GORP mass error.
