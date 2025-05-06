@@ -97,7 +97,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
     # reformat and determine the number of ids provided based on the input type
     if isinstance(ids, list): N_ids = len(ids); ids = str(ids)[1:-1]
     elif isinstance(ids, str): N_ids = 1
-    else: print('Input "ids" must be either \'str\' or list/tuple of \'str\''); os._exit(1)
+    else: raise ValueError('Input "ids" must be either \'str\' or list/tuple of \'str\'')
 
     # set up our query to the Gaia DR3 catalog
     query = """
@@ -122,7 +122,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
 
     # the program cannot estimate masses for stars without valid parallax or rp mag measurements; remove them
     if np.sum(valid_mask) == N_ids:
-        print('Sorry, none of the ids provided have valid parallax or RP mag measurements.'); os._exit(1)
+        raise ValueError('Sorry, none of the ids provided have valid parallax or RP mag measurements.')
     elif np.sum(valid_mask) > 0:
         print('The following ' + str(int(np.sum(valid_mask))) + ' ids have invalid parallax or RP mag measurements.')
         for i, plx, app_rp in zip(r[sid][valid_mask], r['parallax'][valid_mask], r['phot_rp_mean_mag'][valid_mask]):
@@ -148,7 +148,7 @@ def gaia_posterior(ids, N = 100000, plot_1d = False, plot_2d = False, plot_path 
 
     # the program cannot estimate masses for stars that are outside the recommended range; remove them
     if np.sum(ineligible_mask) == N_ids:
-        print('Sorry, all ids provided are outside the eligible range (4.0 < MGRP < 14.5).'); os._exit(1)
+        raise ValueError('Sorry, all ids provided are outside the eligible range (4.0 < MGRP < 14.5).')
     elif np.sum(ineligible_mask) > 0:
         print('The following ' + str(int(np.sum(ineligible_mask))) + ' ids are outside the eligible range (4.0 < MGRP < 14.5).')
         for i, abs_rp in zip(source_ids[ineligible_mask], abs_rp_mags[ineligible_mask]):
@@ -371,7 +371,7 @@ def rp_posterior(abs_rp_mags, N = 100000):
 
     # the program cannot estimate masses for stars that are outside the recommended range
     if np.sum(ineligible_mask) == len(abs_rp_mags):
-        print('Sorry, all RP mags provided are outside the eligible range (4.0 < MGRP < 14.5). Make sure you are using absolute mags!'); os._exit(1)
+        rasie ValueError('Sorry, all RP mags provided are outside the eligible range (4.0 < MGRP < 14.5). Make sure you are using absolute mags!')
     elif np.sum(ineligible_mask) > 0:
         print('Some RP mags are outside the eligible range (4.0 < MGRP < 14.5). Ignoring those.')
         # adjust queried results by removing ineligible stars
