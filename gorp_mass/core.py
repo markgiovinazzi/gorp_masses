@@ -371,7 +371,7 @@ def rp_posterior(abs_rp_mags, N = 100000):
 
     # the program cannot estimate masses for stars that are outside the recommended range
     if np.sum(ineligible_mask) == len(abs_rp_mags):
-        rasie ValueError('Sorry, all RP mags provided are outside the eligible range (4.0 < MGRP < 14.5). Make sure you are using absolute mags!')
+        raise ValueError('Sorry, all RP mags provided are outside the eligible range (4.0 < MGRP < 14.5). Make sure you are using absolute mags!')
     elif np.sum(ineligible_mask) > 0:
         print('Some RP mags are outside the eligible range (4.0 < MGRP < 14.5). Ignoring those.')
         # adjust queried results by removing ineligible stars
