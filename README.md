@@ -89,4 +89,4 @@ gaia_posterior('1061855729642662144', plot_2d = True)
 
 ![1061855729642662144_2d](https://user-images.githubusercontent.com/14206224/211983210-101de1d6-0538-4bd4-bf8e-af0437086df3.jpeg)
 
-If any bugs are found, or if there are suggestions on how this code can be improved, please feel free to contact me at markgio@sas.upenn.edu.
+If any bugs are found, or if there are suggestions on how this code can be improved, please feel free to contact me at mgiovinazzi@amherst.edu.
